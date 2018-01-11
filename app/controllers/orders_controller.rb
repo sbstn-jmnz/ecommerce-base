@@ -1,6 +1,11 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @orders = current_user.orders.where(payed: false)
+    @total = @orders.total
+  end
+
   def create
     p = Product.find(params[:product_id])
     o = Order.find_or_create_by(user: current_user, product: p, payed: false, price: p.price)
@@ -19,8 +24,4 @@ class OrdersController < ApplicationController
     redirect_to orders_path, notice: 'El carro se ha vaciado.'
   end
 
-  def index
-    @orders = current_user.orders.where(payed: false)
-    @total = @orders.pluck("price * quantity").sum()
-  end
 end
